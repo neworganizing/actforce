@@ -1,0 +1,9 @@
+{% extends "wrapper.html" %}
+{% block content %}
+<ul>
+    {% for page in pages %}
+        <li><a href="{% url 'mover_pageroot' page.name %}">{{ page.name }}</a> - {{ page.title }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}

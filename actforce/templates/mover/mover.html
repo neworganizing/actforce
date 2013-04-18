@@ -1,0 +1,180 @@
+{% extends "wrapper.html" %}
+
+{% block pagetitle %}
+    {{ page.title }}
+{% endblock pagetitle %}
+{% block content %}
+    <div class="row core">
+        <div class="span6 left">
+            <h4>ActionKit <span class="pagetitle">{{ akpage.id }} - {{ akpage.name }} <a href="#" class="changepage-toggle">Change</a></span></h4>
+            <div class="changepage hide"><form action="/mover/" method="POST"><fieldset><input name="page" type="text" value="" class="pagename"><button class="btn btn-primary">Load</button></fieldset>{% csrf_token %}</form></div>
+
+            <div id="activerecord" class="record">
+                <span data-target="name">{{ akuser.first_name }} {{ akuser.last_name }}</span><br />
+                {% if akuserorg %}<span data-target="organization">{{ akuserorg }}</span><br>{% endif %}
+                <a href="mailto:{{ akuser.email }}" class="email"><span data-target="email">{{ akuser.email }}</span></a>
+                <hr>
+                {% if akuser.address1 %}<span>Address: {{ akuser.address1 }}</span><br/>{% endif %}
+                {% if akuser.address2 %}<span>Address 2: {{ akuser.address2 }}</span><br/>{% endif %}
+                {% if akuserphone %}<span>Phone: {{ akuserphone }}</span><br/>{% endif %}
+                {% if akuser.state %}<span>{{ akuser.city|default:"" }} {{ akuser.state }}</span>{% endif %}
+                {% if akuser.postal %}<span>{{ akuser.postal }}</span><br/>{% endif %}
+                Actionkit ID: <a href="https://act.neworganizing.com/admin/core/user/{{akuser.id}}/" target="_blank">{{akuser.id}}</a>
+            </div>
+            <hr>
+
+            <ul class="status nav nav-pills nav-stacked">{% spaceless %}
+    {% for action in akactions %}
+    
+        <li class="{% if action.id == akaction.id %}active active-action{% elif action.id in completions %}complete{%endif%}">
+            <a href="{% url 'mover_action' akpage.name action.id %}" id="action-{{ action.id }}">{% if action.user.first_name or action.user.last_name %}{{ action.user.first_name|title }} {{ action.user.last_name|title }}{% else %}{{ action.user.email }}{% endif %} | {{ action.id }}</a></li>
+    {% endfor %}{% endspaceless %}
+            </ul>
+
+
+        </div>
+        <div class="span6 results">
+            <h4>Salesforce</h4>
+            <div id="rightbox">
+
+                {% if form.errors %}
+
+                    <div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>
+    The Following Errors Were Found
+        {% for field in form %}
+    {% if field.errors %}
+        <br>{{ field.label }}: {{ field.errors|striptags }}
+    {% endif %}
+    
+    {% endfor %}
+                </div>
+{% endif %}
+
+                <!-- Salesforce Input Form -->
+                <div class="record editform
+                    {% if sfcontacts|length > 0 and form.action.value == 'create' and not displayform %}hide{% endif %}">
+                    <form id="recordform" method="post"><fieldset>
+                        <strong><span class="action">{{ form.action.value|title }}</span> Record</strong>
+                        {% if form.salesforceid.value %}<a href="{{ sfinstance }}{{ form.salesforceid.value }}" target="_blank" class="viewonsalesforce">View On Salesforce</a>{% endif %}
+                        <!-- Name -->
+                        <div class="clearfix">
+                            {{ form.firstname }}
+                            {{ form.lastname }}
+                        </div>
+                        <!-- Org -->
+                        <div class="clearfix">
+                            {{ form.orgname }}
+                            <a href="#orgModal" role="button" class="btn changeorg" data-toggle="modal">Change</a>
+                        </div>
+
+                        <!-- Title -->
+                        {{ form.title }}
+
+                        <!-- Email -->
+                        <div class="clearfix">
+                            {{ form.email }}
+                            {{ form.alt_email }}
+                        </div>
+
+                        {{ form.phone }}
+
+                        <!-- Address -->
+                        {{ form.address }}
+                        {{ form.city }}
+                        {{ form.state }}
+                        {{ form.zip }}
+
+
+                    {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                    {% endfor %}
+                    <input type="hidden" name="next" value="{% url 'mover_action' pagename=akpage.name actionid=aknextaction.pk %}">
+                    <input type="hidden" name="orgname" value="{{ form.orgname.value }}" id="id_hiddenorgname">
+                    {% csrf_token %}
+                    {% if form.action.value == 'create' %}
+                        <button type="submit" name="submit" value="submitassociate" class="btn btn-success">Create Record</button>
+                    {% else %}
+                        <button type="submit" name="submit" value="submitassociate" class="btn btn-primary">Submit Edit &amp; Associate</button>
+                        <button type="submit" name="submit" value="edit" class="btn">Submit Edit</button>
+                    {% endif %}
+                    
+
+
+                </fieldset></form>
+            </div>
+            {% if form.action.value == 'edit' %}
+                <div class="record "><a href="{% url 'mover_action' pagename=akpage.name actionid=akaction.pk %}#addnew" class="">It Isn't Here. Create A New Record</a></div>
+            {% else %}
+                <div class="record createnewrecord{% if sfcontacts|length = 0 or displayform %} hide{% endif %}"><a href="" class="">It Isn't Here. Create A New Record</a></div>
+            {% endif %}
+            {% for contact in sfcontacts %}
+            <div class="record existingrecord">
+                <span class="recordinfo name">{{ contact.name }}</span><br />
+                <span class="recordinfo organization">{{ contact.orgname }}</span><br>
+                <a href="{{ contact.email|default:"" }}" class="email">{{ contact.email|default:"" }} {{ contact.alt_email|default:"" }}</a>
+                {% if contact.address1 or contact.phone or contact.city or contact.state or contact.zip %}
+                <hr>
+                {% endif %}
+                {% if contact.address1 %}<span class="recordinfo address1">{{ contact.address1 }}</span><br />{% endif %}
+                {% if contact.phone %}<span class="recordinfo phone">{{ contact.phone }}</span><br />{% endif %}
+                {% if contact.city %}<span class="recordinfo city">{{ contact.city }}</span> {% endif %}
+                {% if contact.state %}<span class="recordinfo state">{{ contact.state }}</span>{% endif %}
+                {% if contact.zip %}<span class="recordinfo zip">{{ contact.zip }}</span>{% endif %}
+                <div class="options"><a href="?action=associate&sfid={{ contact.id }}&sfakuserid={{ contact.sfakid|default:"new" }}&akuser={{ akuser.id }}&actionid={{ akaction.id }}&akpage={{ akpage.id }}&next={% url 'mover_action' pagename=akpage.name actionid=aknextaction.pk %}" class="btn btn-primary btn-small">Use This Record</a>
+                <a href="?action=edit&sfid={{ contact.id }}" class="btn btn-small editrecordbutton">Edit This Record</a>
+                <a href="{{ contact.url }}" target="_blank" class="btn btn-small editrecordbutton">View On Salesforce</a>
+            </div>
+
+                </div>
+            {% endfor %}
+
+
+                <!-- Org Selection Model -->
+                <div id="orgModal" class="modal hide fade" tabindex="-1" role="dialog">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="orgModalLabel">Choose An Organization</h3>
+                    <form class="orgsearch"><fieldset><input type="text" class="orgsearchbox" placeholder="Org To Search For">
+                    <button class="btn orgsearchbtn">Search</button></fieldset></form>
+                </div>
+                <div class="modal-body">
+                    <div class="loadingbar progress progress-striped active hide">
+  <div class="bar" style="width: 100%;"></div>
+</div>
+                <div class="noresults alert alert-error hide">
+                        No Results Found
+                </div>
+                <div class="moreresults alert alert-info hide">
+                        7 Or More Results Found, Narrow Your Search
+                </div>
+                    <ul class="orglist fulllist nav nav-pills nav-stacked">
+                    </ul>
+                    <ul class="orglist nav nav-pills nav-stacked"><li class="createorg"><a href="#">Create A New Org</a></li></ul>
+                    <form class="neworg hide"><hr><fieldset><input type="text" placeholder="Org Name" id="neworgname" value="{{ akuserorg|default:"" }}"><button class="btn btn-success">Create &amp; Use Organization</button></fieldset></form>
+                </div>
+            </div>
+
+        </div><!-- /Right Side AJAX Box -->
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block footerjs %}
+<script type="text/javascript">
+
+{% if akuserorg or form.orgid.value %}
+$(window).load(
+
+{% if akuserorg %}
+    orgquery('{{ akuserorg }}','{{ form.orgid.value }}')
+{% else %}
+    orgquery('','{{ form.orgid.value }}')
+{% endif %}
+
+);
+{% endif %}
+
+$('.status').scrollTop( $(".active-action").offset().top - $('.status').offset().top - 60 );
+</script>
+{% endblock footerjs %}

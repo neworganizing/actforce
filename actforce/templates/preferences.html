@@ -1,0 +1,19 @@
+{% extends "wrapper.html" %}
+
+{% block pagetitle %}Preferences{% endblock pagetitle %}
+
+{% block content %}
+        <div class="row core preferences">
+        <div class="span6 offset3">
+          <H1>Preferences</h1>
+<form action="." method="post">
+  <fieldset>
+    <legend>Salesforce Password</legend>
+    {{ form }}
+    <button type="submit" class="btn">Save Preferences</button>
+  </fieldset>
+  {% csrf_token %}
+</form>
+        </div>
+    </div>
+{% endblock content %}

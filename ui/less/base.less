@@ -1,0 +1,179 @@
+html {
+    overflow-y: scroll;
+}
+
+body {
+    padding-top: 60px;
+}
+
+h4 {
+    height: 20px;
+}
+
+.preferences {
+    input {
+        width: 100%;
+        padding: 14px 7px;
+        margin-top: 0;
+        margin-bottom: 7px;
+    }
+    label {
+        margin-bottom: 3px;
+    }
+    .errorlist {
+        margin-bottom: 5px;
+    }
+}
+
+.navbar-form {
+    input {
+        width: 300px;
+    }
+}
+
+.pagetitle {
+    font-size: 0.75em;
+    font-weight: lighter;
+    &:before {
+        content: "(";
+    }
+    &:after {
+        content: ")";
+    }
+}
+
+.changepage {
+    margin: 0;
+    form {
+        margin: 0;
+    }
+    input {
+        width: 79%;
+        padding: 15px 7px;
+    }
+    button {
+        width: 20%;
+        float: right;
+    }
+}
+
+.record {
+    display: block;
+    background: #F7F7F7;
+    padding: 10px;
+    margin-bottom: 15px;
+    .border-radius(5px);
+    hr {
+        margin: 5px 0;
+    }
+    color: #000;
+    &:hover {
+        text-decoration: none;
+    }
+    .organization:before {
+        content: "Org: ";
+    }
+    .viewonsalesforce {
+        float: right;
+    }
+    form {
+        padding: 0;
+        margin: 0;
+        label {
+            font-size: 12px;
+            padding: 0;
+            margin: 0;
+            font-weight: normal;
+        }
+        input, textarea {
+            width: 428px;
+        }
+        .alert {
+            font-size: 1em;
+            margin-bottom: 5px;
+            padding: 3px;
+        }
+        .name {
+            font-weight: bold;
+            padding: 10px 4px;
+            font-size: 23px;
+        }
+        .org {
+            width: 310px;
+        }
+        .addressarea {
+            height: 4em;
+            resize: none;
+        }
+        .changeorg {
+            width: 80px;
+            margin-bottom: 10px;
+            float: right;
+        }
+        .left {
+            width: 252px;
+        }
+        .right {
+            width: 152px;
+            float: right;
+        }
+        .firstname {
+            width: 162px;
+        }
+        .lastname {
+            width: 252px;
+        }
+
+    }
+    .options {
+        margin-top: 7px;
+    }
+}
+
+#orgModal {
+    input {
+        margin-bottom: 0;
+        width: 50%;
+        margin-right: 5px;
+    }
+    .orgsearch {
+        margin: 5px 0 0 0;
+    }
+    .orglist {
+        li {
+            text-decoration: none;
+        }
+        .createorg {
+            color: #468847;
+            a {
+                color: #468847;
+            }
+            &:hover {
+                a {
+                    background-color: #DFF0D8;
+                }
+            }
+        }
+        .active {
+            background-color: #DFF0D8;
+        }
+        margin-bottom: 5px;
+    }
+    .neworg {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    }
+}
+
+.status {
+    max-height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    li a {
+        .border-radius(0px);
+    }
+    .complete {
+        background-color: #DFF0D8;
+    }
+}

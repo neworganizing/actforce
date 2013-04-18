@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block pagetitle %}Actforce{% endblock pagetitle %}</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.0.min.js"><\/script>')</script>
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/main.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-alert.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-modal.js"></script>
+</head>
+<body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="brand" href="/">ActForce</a>
+
+        <ul class="nav">
+          <li><a href="{% url 'mover_pagelist' %}">ActionKit Page List</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+      <form class="navbar-form pull-right" action="/mover/" method="POST">
+          <input type="text" class="span2" name="page" value="{{ akpage.name|default:"" }}">
+          {% csrf_token %}
+          <button type="submit" class="btn">Submit</button>
+      </form>
+
+      </div>
+    </div>
+    </div>
+
+<div role="main" class="container">
+        {% if messages %}
+        <div class="row">
+    {% for message in messages %}
+    
+                    <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}"><button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div><!-- Button to trigger modal -->
+    {% endfor %}
+    {% if sfmessage == "noaccount" %}
+                <div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>
+                    No Salesforce Account Set
+                </div><!-- Button to trigger modal -->
+    {% endif %}
+
+</div>
+{% endif %}
+{% block content %}
+{% endblock content %}
+</div>
+
+{% block footerjs %}
+{% endblock footerjs %}
+
+</body>
+</html>

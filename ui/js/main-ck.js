@@ -1,0 +1,1 @@
+$(document).ready(function(){$(".changepage-toggle").click(function(){$(".changepage").toggleClass("hide")});$(".orgoption").click(function(){alert($(this).attr("data-orgname"));alert($(this).attr("data-orgid"));return!1})});
