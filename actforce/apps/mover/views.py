@@ -9,7 +9,7 @@ from django.conf import settings
 
 from simple_salesforce import Salesforce, SalesforceExpiredSession
 
-from django_actionkit.models import CoreAction, CorePage, CoreUserfield
+from actionkit.models import CoreAction, CorePage, CoreUserfield
 
 from actforce.apps.base.salesforce import refresh_token
 
@@ -25,7 +25,7 @@ class PageListView(TemplateView):
     def get(self, request, **kwargs):
         pages = cache.get('latestpages')
         if not pages:
-            pages = CorePage.objects.all().order_by('-id')[:100]
+            pages = CorePage.objects.using('actionkit').all().order_by('-id')[:100]
             cache.set('latestpages', pages, 300)
 
         context = {
@@ -38,7 +38,7 @@ class PageListView(TemplateView):
 
         if 'page' in request.POST:
             try:
-                page = CorePage.objects.get(name=request.POST['page'])
+                page = CorePage.objects.using('actionkit').get(name=request.POST['page'])
                 return redirect('/mover/%s/' % page.name)
             except CorePage.DoesNotExist:
                 messages.error(request, 'Sorry, Could Not Find Page \'%s\'' % request.POST['page'])
@@ -85,7 +85,7 @@ class MoverView(TemplateView):
         # Get all the actions for the page, try the cache first
         actions = cache.get('actions-%s' % kwargs['pagename'])
         if not actions:
-            actions = CoreAction.objects.filter(page__name=kwargs['pagename']).select_related('page','user').extra(select=
+            actions = CoreAction.objects.using('actionkit').filter(page__name=kwargs['pagename']).select_related('page','user').extra(select=
                 {'organization': 'SELECT `core_userfield`.`value` FROM `core_userfield` WHERE (`core_userfield`.`parent_id` = `core_user`.`id` AND `core_userfield`.`name` = \'organization\')',
                 'phone': 'SELECT `core_phone`.`normalized_phone` FROM `core_phone` WHERE `core_phone`.`user_id` = `core_user`.`id` ORDER BY case `core_phone`.`type` when \'home\' then 1 when \'mobile\' then 2 when \'work\' then 3 end LIMIT 1'})
             cache.set('actions-%s' % kwargs['pagename'],actions,300)

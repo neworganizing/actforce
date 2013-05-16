@@ -4,7 +4,7 @@ from django.core.cache import cache
 
 from django.contrib.auth.models import User
 
-from django_actionkit.models import CorePage, CoreUser
+from actionkit.models import CorePage, CoreUser
 
 
 class CompletedAction(models.Model):
@@ -23,7 +23,7 @@ class CompletedAction(models.Model):
         if name == None:
             page = cache.get('actionpage-%s' % self.page)
             if page == None:
-                page = CorePage.objects.only('name').get(pk=self.page)
+                page = CorePage.objects.using('actionkit').only('name').get(pk=self.page)
                 cache.set('actionpage-%s' % self.page, page, 86400)
             name = "Action %s on page %s by %s %s" % (self.action, page.name, self.created_by.first_name, self.created_by.last_name)
             cache.set('cauni-%s' % self.id, name, 6000)
@@ -46,7 +46,7 @@ class UserAssociation(models.Model):
     def __unicode__(self):
         name = cache.get('assocation-%s' % self.user)
         if name == None:
-            user = CoreUser.objects.get(pk=self.user)
+            user = CoreUser.objects.using('actionkit').get(pk=self.user)
             name = "%s %s = %s" % (user.first_name, user.last_name, self.salesforce_id)
             cache.set('assocation-%s' % self.user, name, 6000)
         return name

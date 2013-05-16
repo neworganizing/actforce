@@ -13,6 +13,6 @@ pylibmc==1.2.2
 django-pylibmc-sasl==0.2.4
 ipython==0.13.1
 simple-salesforce==0.51
-git+git://github.com/neworganizing/django-actionkit@0b271d31897faf2ae32c6bc10b3966ccc68a8b2a#egg=django-actionkit
+git+git://github.com/neworganizing/python-actionkit.git#egg=python-actionkit
 git+git://github.com/kromem/django-fields@9d523beaf99dd50735f730dc4ab64bf5a370af11#egg=django-fields
 git+git://github.com/neworganizing/salesforce-oauth2@823883e35400473d57b675952a32d3b09462c981#egg=salesforce-oauth2

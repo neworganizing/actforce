@@ -149,10 +149,6 @@ INSTALLED_APPS = (
 
 )
 
-DATABASE_ROUTERS = (
-    'django_actionkit.connections.AKRouter',
-)
-
 CACHES = {
     'default': {
         'BACKEND': 'django_pylibmc.memcached.PyLibMCCache'
